@@ -17,28 +17,48 @@
 % fprintf('Time taken for first block: %f seconds\n', elapsed_time_5000);
 
 
-% 5000 by fmincon 6*6
 tic
-filename = "data_5000";
-get_2step(5000,filename);
+filename = "data_2000_2nd";
+get_2step_2nd(2000,filename);
 % handle data
-% range 6*6
-dim2_handle(filename,'result_5000_fmincon_36',6);
+dim2_handle(filename,'result_2000_fmincon_25_2nd',5);
 
-elapsed_time_5000 = toc;
-fprintf('Time taken for first block: %f seconds\n', elapsed_time_5000);
+elapsed_time_2000 = toc;
+fprintf('Time taken for first block: %f seconds\n', elapsed_time_2000);
 
 
-% 5000 by fmincon 10*10
 tic
-filename = "data_5000";
-get_2step(5000,filename);
+filename = "data_1000_2nd";
+get_2step_2nd(1000,filename);
 % handle data
-% range 6*6
-dim2_handle(filename,'result_5000_fmincon_100',10);
+dim2_handle(filename,'result_1000_fmincon_25_2nd',5);
 
-elapsed_time_5000 = toc;
-fprintf('Time taken for second block: %f seconds\n', elapsed_time_5000);
+elapsed_time_1000 = toc;
+fprintf('Time taken for first block: %f seconds\n', elapsed_time_1000);
+
+
+tic
+filename = "data_1000_2nd";
+get_2step_2nd(1000,filename);
+% handle data
+dim2_handle(filename,'result_1000_fmincon_400_2nd',20);
+
+elapsed_time_1000 = toc;
+fprintf('Time taken for first block: %f seconds\n', elapsed_time_1000);
+
+
+
+tic
+filename = "data_2000_2nd";
+get_2step_2nd(2000,filename);
+% handle data
+dim2_handle(filename,'result_2000_fmincon_400_2nd',20);
+
+elapsed_time_2000 = toc;
+fprintf('Time taken for first block: %f seconds\n', elapsed_time_2000);
+
+
+
 
 
 
