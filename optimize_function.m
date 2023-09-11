@@ -13,26 +13,20 @@ function [min_value, max_value] = optimize_function(X, Y, range_X, H, h, range_Y
     % Optimization options
     options = optimoptions('fmincon','Display','off');
     
-    N = 100;  % Number of times we want to run the local search
-    all_min_values = inf(N, 1);
-    all_max_values = -inf(N, 1);
 
-    for i = 1:N
-        % Choose a random initial guess within the bounds
-        fprintf('Now at %f times\n', i);
-        x0 = lb + (ub - lb) .* rand(2, 1);
 
-        % Use fmincon to find the minimum value
-        x_min = fmincon(fun_min, x0, [], [], [], [], lb, ub, [], options);
-        all_min_values(i) = target_function(x_min, X, Y, range_Y, H, h);
-    
-        % Use fmincon to find the maximum value (by searching for the minimum of the negated function)
-        x_max = fmincon(fun_max, x0, [], [], [], [], lb, ub, [], options);
-        all_max_values(i) = target_function(x_max, X, Y, range_Y, H, h);
-    end
+    % Choose a random initial guess within the bounds
 
-    min_value = min(all_min_values);
-    max_value = max(all_max_values);
+    x0 = (lb+ub)/2;
+
+    % Use fmincon to find the minimum value
+    x_min = fmincon(fun_min, x0, [], [], [], [], lb, ub, [], options);
+    min_value = fun_min(x_min);
+
+
+    % Use fmincon to find the maximum value (by searching for the minimum of the negated function)
+    x_max = fmincon(fun_max, x0, [], [], [], [], lb, ub, [], options);
+    max_value = -fun_max(x_max);
 
 end
 

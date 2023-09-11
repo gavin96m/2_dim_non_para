@@ -95,7 +95,8 @@ function dim2_handle(filename,datafilename,regionsize)
         for j = 1:num_regions
             range_Y = regions(j,:);
             [min_value, max_value] = optimize_function(init_data, next_data, range_X, h_next, h_init, range_Y);
-    
+
+            
             temp_probability(j, 1) = min_value;
             temp_probability(j, 2) = max_value;
         end
