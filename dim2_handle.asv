@@ -6,8 +6,8 @@ function dim2_handle(filename,datafilename,regionsize)
 
     sigma_init = cov(init_data);
     sigma_next = cov(next_data);
-
-
+    
+    
     d = 2;
     n = size(data, 1);
     disp(['Sample data length (n) = ', num2str(n)]);
@@ -18,13 +18,13 @@ function dim2_handle(filename,datafilename,regionsize)
 %   
 %   h_init = (n^(-1/(d+4)) * std_init.^0.5);
 %   h_next = (n^(-1/(d+4)) * std_next.^0.5);
-
+    
     h_init = (n^(-1/(d+4))) * sqrt(eig(sigma_init));
     h_next = (n^(-1/(d+4))) * sqrt(eig(sigma_next));
-
+    
 %     disp(['h_init = ' mat2str(h_init)]);
 %     disp(['h_next = ' mat2str(h_next)]);
-
+    
     init_data = init_data';
     next_data = next_data';
 
@@ -34,7 +34,7 @@ function dim2_handle(filename,datafilename,regionsize)
     x_max = 2;
     y_min = 0;
     y_max = 2;
-
+    
     rows = regionsize;
     cols = regionsize;
 
@@ -53,21 +53,21 @@ function dim2_handle(filename,datafilename,regionsize)
             x_max_curr = x_min_curr + x_step;
             y_min_curr = y_min + (i - 1) * y_step;
             y_max_curr = y_min_curr + y_step;
-
+            
             regions(region_idx, :) = [x_min_curr, y_min_curr, x_max_curr, y_max_curr];
-
+            
             region_idx = region_idx + 1;
         end
     end
-
+    
     [num_regions, ~] = size(regions);
     fprintf('region number: %d\n', num_regions);
 
 %     total_iterations = num_regions^2;
 %     counter = 0;
+    
 
-
-
+                        
 %   range_X: init region
 %   range_Y: target region 
 %     for i = 1:num_regions
@@ -88,7 +88,7 @@ function dim2_handle(filename,datafilename,regionsize)
 %     end
 
     parfor_progress(num_regions); 
-
+    
     parfor i = 1:num_regions
         range_X = regions(i,:);
         temp_probability = zeros(num_regions, 2); 
@@ -96,6 +96,10 @@ function dim2_handle(filename,datafilename,regionsize)
             range_Y = regions(j,:);
             [min_value, max_value] = optimize_function(init_data, next_data, range_X, h_next, h_init, range_Y);
 
+            if min_value>max_value
+                [min_value, max_value] = global_search(init_data, next_data, range_X, h_next, h_init, range_Y);
+
+            end
             temp_probability(j, 1) = min_value;
             temp_probability(j, 2) = max_value;
         end
@@ -103,7 +107,7 @@ function dim2_handle(filename,datafilename,regionsize)
         parfor_progress(); 
     end
 
-
+    
 
     assignin('base','probability',probability);
 
