@@ -2,7 +2,7 @@
 % range_Y is the target region
 
 % function [min_value, max_value] = optimize_function(X, Y, range_X, H, h, range_Y,all_target_regions)
-function [min_value, max_value] = optimize_function(X, Y, range_X, H, h, range_Y)
+function [min_value, max_value] = optimize_function_global(X, Y, range_X, H, h, range_Y)
 
     % Nonlinear constraints
 %     nonlcon = @(x) prob_constraints(x,X,Y,all_target_regions,H,h);
@@ -38,24 +38,24 @@ function [min_value, max_value] = optimize_function(X, Y, range_X, H, h, range_Y
 
     if min_value>max_value
         disp("error");
-        % Define the optimization problem
-        problem_min = createOptimProblem('fmincon', 'objective', fun_min, ...
-            'x0', (lb+ub)/2, 'lb', lb, 'ub', ub);
-    
-        problem_max = createOptimProblem('fmincon', 'objective', fun_max, ...
-            'x0', (lb+ub)/2, 'lb', lb, 'ub', ub);
-    
-        % Create a GlobalSearch object
-        gs = GlobalSearch('Display', 'off');
-    
-        % Run GlobalSearch
-        [x_min, min_value] = run(gs, problem_min);
-        [~, max_neg_value] = run(gs, problem_max);
-    
-        max_value = -max_neg_value;
-        if min_value>max_value
-            disp("error!!!");
-        end  
+        % % Define the optimization problem
+        % problem_min = createOptimProblem('fmincon', 'objective', fun_min, ...
+        %     'x0', (lb+ub)/2, 'lb', lb, 'ub', ub);
+        % 
+        % problem_max = createOptimProblem('fmincon', 'objective', fun_max, ...
+        %     'x0', (lb+ub)/2, 'lb', lb, 'ub', ub);
+        % 
+        % % Create a GlobalSearch object
+        % gs = GlobalSearch('Display', 'off');
+        % 
+        % % Run GlobalSearch
+        % [x_min, min_value] = run(gs, problem_min);
+        % [~, max_neg_value] = run(gs, problem_max);
+        % 
+        % max_value = -max_neg_value;
+        % if min_value>max_value
+        %     disp("error!!!");
+        % end  
 
     end
     
