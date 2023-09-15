@@ -3,7 +3,7 @@
 %This purpose of this function is to generate the CDF based on the
 %non-parametric estimation. The inputs are x,X,Y,H,h. x is the fixed value
 %from the conditional variable. X and Y are the sample datas. H and h are
-%the bandwidth of sample data X and Y. Here the non-parametric kernel
+%the bandwidth of sample data Y and X. Here the non-parametric kernel
 %function is the Gaussian kernel. cx=cx_vecsimpl=prod(cx_vec,2);
 % cx_vecsimpl is prod(cx_vec,2) where cx_vec=(0.5*pi)^(-0.5)*exp( -0.5*( (x-X)./h )^2  ).
 

@@ -26,13 +26,19 @@ function [min_value, max_value] = optimize_function(X, Y, range_X, H, h, range_Y
     options = optimoptions('fmincon','Display','off');
 
      % Use fmincon to find the minimum value
-    x_min = fmincon(fun_min, x0, [], [], [], [], lb, ub, [], options);
+    [x_min,fmin] = fmincon(fun_min, x0, [], [], [], [], lb, ub, [], options);
     min_value = target_function(x_min, X, Y, range_Y, H, h);
 
     % Use fmincon to find the maximum value (by searching for the minimum of the negated function)
-    x_max = fmincon(fun_max, x_min, [], [], [], [], lb, ub, [], options);
+    [x_max,fmax] = fmincon(fun_max, x_min, [], [], [], [], lb, ub, [], options);
     max_value = target_function(x_max, X, Y, range_Y, H, h);
-
+    
+    if fmin ~= min_value
+        disp("wrong!!")
+    end
+    if fmax ~= max_value
+        disp("wrong!!")
+    end
     
    
 
