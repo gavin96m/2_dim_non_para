@@ -1,0 +1,133 @@
+#include "mex.h"
+#include <math.h>
+
+void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
+    double *X, *Y, *cx_ptr, *cx_vecsimpl, *sample_Y_data, *H, *h, *f;
+    
+    size_t n, m, sample_Y_cols;
+
+    // 获取输入参数
+    X = mxGetPr(prhs[0]);
+    Y = mxGetPr(prhs[1]);
+    cx_ptr = mxGetPr(prhs[2]);
+    cx_vecsimpl = mxGetPr(prhs[3]);
+    sample_Y_data = mxGetPr(prhs[4]);
+    H = mxGetPr(prhs[5]);
+    h = mxGetPr(prhs[6]);
+
+    n = mxGetM(prhs[0]); // 获取X的行数
+    m = mxGetN(prhs[0]); // 获取X的列数
+    sample_Y_cols = mxGetN(prhs[4]); // 获取sample_Y的列数
+    
+    // mexPrintf("lines of sample_Y:");
+    // mexPrintf("%d\n",sample_Y_cols);
+
+    // mexPrintf("%d,%d\n",n,m);
+
+    double sample_Y[2][sample_Y_cols];
+    double cx = cx_ptr[0];
+
+    for (size_t idx = 0; idx < 2; idx++) {
+        for (size_t k = 0; k < sample_Y_cols; k++) {
+            sample_Y[idx][k] = sample_Y_data[idx + k*2];
+        }
+    }
+
+    // mexPrintf("Values of sample_Y:\n");
+    // for (size_t idx = 0; idx < 2; idx++) {
+    //     for (size_t k = 0; k < sample_Y_cols; k++) {
+    //         mexPrintf("%f ", sample_Y[idx][k]);
+    //     }
+    //     mexPrintf("\n");
+    // }
+
+    // 为输出参数分配内存
+    plhs[0] = mxCreateDoubleMatrix(n, m, mxREAL);
+    f = mxGetPr(plhs[0]);
+
+    double **cy_vec = (double **)malloc(2 * sizeof(double *));
+    for (size_t i = 0; i < 2; i++) {
+        cy_vec[i] = (double *)malloc(sample_Y_cols * sizeof(double));
+    }
+    
+    // Use cy_vec as a 2D array in C
+    // For example: cy_vec[i][j]
+   
+    double *cy_vecsimpl;
+
+    // Allocate memory
+    cy_vecsimpl = (double *)malloc(sample_Y_cols * sizeof(double));
+    
+    double H_prod = H[0] * H[1];
+    double h_prod = h[0] * h[1];
+    // Constants
+    double constant = pow(2 * M_PI, -0.5);
+
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < m; j++) {
+            
+            double y[2][sample_Y_cols];
+            for (size_t k = 0; k<sample_Y_cols; k++){
+                y[0][k] = X[i + j*n];
+                y[1][k] = Y[i + j*n];
+            }
+            // for (size_t idx = 0; idx < 2; idx++) {
+            //     for (size_t k = 0; k < sample_Y_cols; k++) {
+            //         mexPrintf("y: %f ", y[idx][k]);
+            //     }
+            //     mexPrintf("\n");
+            // }
+            // double cy_vec[2][sample_Y_cols];
+
+            
+            
+            for (size_t i = 0; i < 2; i++) {
+                for (size_t j = 0; j < sample_Y_cols; j++) {
+                    double diff = (y[i][j] - sample_Y[i][j]) / H[i];
+                    cy_vec[i][j] = constant * exp(-0.5 * diff * diff);
+                }
+            }
+
+                        
+            // mexPrintf("Values of cy_vec:\n");
+            // for (size_t idx = 0; idx < 2; idx++) {
+            //     for (size_t k = 0; k < sample_Y_cols; k++) {
+            //         mexPrintf("%f ", cy_vec[idx][k]);
+            //     }
+            //     mexPrintf("\n");
+            // }
+            // 
+            // double cy_vecsimpl[sample_Y_cols];
+            for (size_t k = 0; k < sample_Y_cols; k++) {
+                cy_vecsimpl[k] = cy_vec[0][k] * cy_vec[1][k];
+            }
+            
+            // mexPrintf("Values of cy_vecsimpl:\n");
+            // mexPrintf("%f ",cy_vecsimpl[0]);
+            // mexPrintf("%f ",cy_vecsimpl[1]);
+            // mexPrintf("%f ",cy_vecsimpl[2]);
+            // mexPrintf("\n");
+
+            double sum_product = 0.0;
+            for (size_t k = 0; k < sample_Y_cols; k++) {
+                sum_product += cx_vecsimpl[k] * cy_vecsimpl[k];
+            }
+
+            // mexPrintf("Values of sum:\n");
+            // mexPrintf("%f ",sum_product);
+            // mexPrintf("\n");
+            // f[i*n + j] = (1.0 / (H_prod * h_prod)) * sum_product * (1.0/(1.0/(h_prod)*cx));
+
+            f[j*n + i] = (1.0 / (H_prod * h_prod)) * sum_product * (1.0/(1.0/(h_prod)*cx));
+            // mexPrintf("f[%d][%d]: %f\n", i, j, f[j*n + i]);
+        }
+    }
+
+    // Remember to free the memory when done
+    for (size_t i = 0; i < 2; i++) {
+        free(cy_vec[i]);
+    }
+    free(cy_vec);
+    free(cy_vecsimpl);
+
+}

@@ -9,64 +9,23 @@
 
 % X,Y combine the location of x0;
 % cx,cx_vecsimpl is calculate
-% Size of X:
-%     14    14
-% 
-% Size of Y:
-%     14    14
-% 
-% Size of cx:
-%      1     1
-% 
-% Size of cx_vecsimpl:
-%            1        1000
-% 
-% Size of sample_Y:
-%            2        1000
-% 
-% Size of H:
-%      2     1
-% 
-% Size of h:
-%      2     1
 
-function f = speedup_nonparestim(X, Y, cx, cx_vecsimpl, sample_Y, H, h)
+
+function f = speedup_nonparestim_c(X, Y, cx, cx_vecsimpl, sample_Y, H, h)
     [n, m] = size(X);
+    disp(m);
+    disp(n);
     f = zeros(n, m);
 
-    % disp(n);
-    % disp(m);
-    % disp("asdf");
-    % disp(size(sample_Y));
     for i = 1:n
         for j = 1:m
-
-            y = [X(i, j); Y(i, j)]; 
-            % size(y)
-            
+            y = [X(i, j); Y(i, j)];
             y = repmat(y, 1, size(sample_Y, 2));  % replicate y to match the size of sample_Y
-            % disp(y);
+            % cy_vec = (2*pi)^(-0.5) * exp(-0.5 * ((y - sample_Y) ./ H).^2);
+            cy_vec = cy_vec_c(y,sample_Y,H);
             
-            cy_vec = (2*pi)^(-0.5) * exp(-0.5 * ((y - sample_Y) ./ H).^2);
-            % disp("11111");
-            % disp(cy_vec);
-            % disp(size(cy_vec));
-            % disp((2*pi)^(-0.5)*exp([0;-0.125])); %useless
-            % disp("22222");
             cy_vecsimpl = prod(cy_vec, 1);
-            % disp("cy_vecsimpl");
-            % disp(cy_vecsimpl);
-            % disp(size(cy_vecsimpl));
-            % disp("----");
             f(i, j) = (prod(H)*prod(h))^(-1)*sum(cx_vecsimpl.*cy_vecsimpl)*(prod(h)^(-1)*cx)^(-1);
-            % disp("sum");
-            % disp(sum(cx_vecsimpl.*cy_vecsimpl));
-            % disp(cx_vecsimpl);
-            % disp(sum(cx_vecsimpl.*cy_vecsimpl));
-            % disp((prod(h)^(-1)*cx)^(-1));
-
-            % disp("f");
-            % disp(f(i,j));
         end
     end
 end

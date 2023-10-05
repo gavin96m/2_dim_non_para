@@ -14,7 +14,7 @@
 %[0,0,1,1]
 
 
-function int_y=integra_nonpara(x0,X,Y,range_Y,H,h)
+function int_y=integra_nonpara_c(x0,X,Y,range_Y,H,h)
 % n=size(X,2);% the sample data scale
 % disp(n);
 
@@ -37,15 +37,15 @@ y_min = range_Y(2);
 y_max = range_Y(4);
 
 
+% n = size(Y,2);
+% cy_vec_preallocated = zeros(1,n);
 
 
 
-int_y = integral2(@(x, y) speedup_nonparestim(x, y, cx, cx_vecsimpl, Y, H, h), x_min, x_max, y_min, y_max);
-disp(int_y);
-% disp("------");
-% disp(size(cx_vecsimpl));
-% disp(size(Y));
-% disp("-----");
+% int_y = integral2(@(x, y) speedup_nonparestim_c(x, y, cx, cx_vecsimpl, Y, H, h, cy_vec_preallocated), x_min, x_max, y_min, y_max);
+int_y = integral2(@(x, y) speed(x, y, cx, cx_vecsimpl, Y, H, h), x_min, x_max, y_min, y_max);
+% disp(int_y);
+
 
 end
 
